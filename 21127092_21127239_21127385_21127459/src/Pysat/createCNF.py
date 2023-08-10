@@ -1,16 +1,9 @@
 from pysat.solvers import Glucose3
 from itertools import combinations, permutations
 # Input and output boards (replace with your actual input and output)
-input_board = [
-    [0, 0, 0],
-    [1, 1, 1]
-]
 
-# output_board = [
-#     [3, 'X', 0, 0],
-#     ['X', 'X', 0, 0],
-#     [0, 0, 0, 0]
-# ]
+
+
 
 def format_board(board):
     # Convert the board to a list of lists of integers
@@ -25,6 +18,7 @@ def format_board(board):
 def generate_cnf_from_input(input_board):
     m, n = len(input_board), len(input_board[0])
     cnf_clauses = []
+    mang_comin = []
 
     # Loop through each cell in the input board
     for i in range(m):
@@ -34,27 +28,27 @@ def generate_cnf_from_input(input_board):
             # If the cell is not empty, it contains a number (not a mine)
             if cell_value != 0:
                 
-                cnf_clauses.append([-var(i, j, n)])
+                #cnf_clauses.append([-var(i, j, n)])
+               
+                
                
                 #b1: đi tìm các ô kề với ô hiện tại, có 
                 adjacent_cells = get_adjacent_cells(i, j, m, n,input_board)
                 
                 
-                #print("vị trí kề:")
-                #print(adjacent_cells)
+                
                 # b2: chuyển đổi vị trí i,j của các ô có thể có mìn
                 # thành index của mảng 1 chiều để biểu thị CNF
                 adjacent_mine_vars = [var(x, y, n) for x, y in adjacent_cells]
                 adjacent_mine_vars_negated = [-var(x, y, n) for x, y in adjacent_cells]
+                
+                
+                mang_comin.append(adjacent_mine_vars)
+                
+                
                 soluongke = len(adjacent_mine_vars)
                 
-                #print("vị trí trong mảng của các ô có thể chứa mìn: ")
-                #print(adjacent_mine_vars)
-
-                # Generate clauses to satisfy the cell's number constraint
-                #b3: tạo mệnh đề: nếu ô hiện tại i,j không chưa mìn thì các ô lân cận
-                # có thể chứa mìn
-                #[-var(i, j, n)] +
+           
                 
                 L = generate_subarrays_recursive(adjacent_mine_vars, cell_value)
                 L = remove_duplicates(L)
@@ -64,23 +58,10 @@ def generate_cnf_from_input(input_board):
                     U = remove_duplicates(U)
                     cnf_clauses.append(U)   
                     
-                #cnf_clauses.append(adjacent_mine_vars)
-                # phải xét có ít nhất các ô lận cận chưa mình từ 1 -> giá trị max 
-                # để đảm bảo không bị xót
-                # for k in range(1, cell_value + 1):
-                #     # Generate clauses to ensure there are at least k mines around the cell
-                #     for mine_comb in get_combinations(adjacent_mine_vars, k):
-                #         #mine_comb sẽ là những sự kết hợp giữa các ô mìn
-                #         #kết hợp tiếp giữa có ít nhất k ô mìn với ô hiện tại không có mìn
-                #         # nếu ô hiện tại không có mình
-                #         #thì có ít nhất k ô lân cận chứa mìn
-                #         #
-                #         print("check mine_comb")
-                #         print(mine_comb)
-                #         mine_clause = [-var(i, j, n)] + mine_comb
-                #         cnf_clauses.append(mine_clause)
-                        
+             
+    convert_mangCoMin(mang_comin)                
     return cnf_clauses
+
 
 def get_adjacent_cells(i, j, m, n,input_board):
     # Get a list of adjacent cells to a given cell (i, j)
@@ -92,7 +73,7 @@ def get_adjacent_cells(i, j, m, n,input_board):
         x, y = i + dx, j + dy
         
         if 0 <= x < m and 0 <= y < n:
-            if(input_board[x][y] > 0):
+            if input_board[x][y] > 0 :
                 continue
             else:
                 adjacent_cells.append((x, y))
@@ -103,13 +84,7 @@ def var(i, j, n):
     # Convert cell coordinates (i, j) to a variable index
     return i * n + j + 1
 
-def get_combinations(lst, k):
-    # Get all combinations of length k from a list lst
-    #kết hợp k phần tử trong mảng lại với nhau
-    # ví dụ: danh sách có: 1 2 3 
-    #                      4 5 6
-    # k = 2 thì 12, 13, 14,...
-    return [list(comb) for comb in combinations(lst, k)]
+
 def generate_subarrays_recursive(arr, k):
     result = []
     n = len(arr)
@@ -132,20 +107,15 @@ def remove_duplicates(arrays):
             seen_arrays.add(arr_tuple)
             result.append(arr)
     return result
+def convert_mangCoMin(arr):
+    flat_array = [item for sublist in arr for item in sublist]
 
-# Convert input and output boards to lists of lists of integers
-#input_board = format_board(input_board)
+# Remove duplicates while preserving order (Python 3.7+)
+    unique_elements = list(dict.fromkeys(flat_array))
+
+    #print(unique_elements)
+    return unique_elements
 
 
-#output_board = format_board(output_board)
 
-# Generate CNF clauses from the input board
-#cnf_clauses = generate_cnf_from_input(input_board)
-
-# TODO: Solve the CNF clauses to find mine positions
-# ...
-
-#Print the CNF clauses (for demonstration purposes)
-# for clause in cnf_clauses:
-#     print(clause)
 
