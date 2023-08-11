@@ -28,5 +28,10 @@ ini_state = mapping_var_ini_state(list_vars)
 problem = Problem(ini_state, cnf_clauses)
 search = A_star()
 result = search.solve_problem(problem)
-print(result)
+list_bomb = []
+for i in result:
+    if result[i] == True:
+        list_bomb.append(i)
+
+# print(list_bomb)
 # print(result)
