@@ -116,97 +116,60 @@ class A_star(Search):
                     heapq.heappush(self.frontier, child)
         return 0
 
-# x_positions = [-1, -1, -1, 0, 0, 1, 1, 1]
-# y_positions = [-1, 0, 1, -1, 1, -1, 0, 1]
+#Tim ra cac bien tu CNF
+def find_list_var(CNF_clauses):
+    result = set()
+    for clause in CNF_clauses:
+        for i in clause:
+            result.add(abs(i))
+    return list(result)
 
-# index_position = [0, 1, 2, 3, 4, 5, 6, 7]
+#Tao ini_state cho thuat toan A*
+def mapping_var_ini_state(ls_vars):
+    state = dict()
+    for i in ls_vars:
+        state[i] = 0
+    return state
 
-# #khoi tao de ra co bao nhieu o ke voi so
-# def Input_State(matrix):
-#     rows = len(matrix)
-#     cols = len(matrix[0])
-#     for i in range(len(matrix)):
-#         temp = []
-#         for j in range(len(matrix[0])):
-#             if i == 0 or j == 0 or i == rows - 1 or j == cols - 1:
-#                 if i == j or abs(i - j) == rows - 1 or abs(i - j) == cols - 1:
-#                     temp.append(3)
-#                 else:
-#                     temp.append(5)
-#             else:
-#                 temp.append(8)
-#         adj.append(temp)
-#     return adj
+# matrix = [
+#     [1, 0, 0],
+#     [0, 0, 0],
+#     [0 , 0, 0]
+# ]
 
-# def CNF_clause(clause, k, n):
-#     print('cls:', clause)
-#     print('k:', k)
-#     print('n:', n)
-#     if k == 0:
-#         flag = bool()
-#         for i in range(n):
-#             check_pos = clause[i]
-#             if matrix[check_pos[0]][check_pos[1]] != -2:
-#                 flag = True
-#             else:
-#                 flag = False
-#                 break
-#         if flag:
-#             return n + 1
-#         else:
-#             return -1
-#         return -1
-#     elif k == n:
-#         flag = bool()
-#         for i in range(n):
-#             check_pos = clause[i]
-#             if matrix[check_pos[0]][check_pos[1]] == -2:
-#                 flag = True
-#             else:
-#                 flag = False
-#                 break
-#         if flag:
-#             return k
-#         else:
-#             return -1
-#     index = clause[n - 1]
-#     # if matrix[index[0]][index[1]] == 10:
-#     # print('matrix:', matrix[index[0]][index[1]])
-#     # return (bool(not(matrix[index[0]][index[1]] == -2)) or bool(CNF_clause(clause, k - 1 , n - 1))) and (bool(matrix[index[0]][index[1]] == -2) or bool(CNF_clause(clause, k, n - 1)))
-#     if matrix[index[0]][index[1]] == -2:
-#         return CNF_clause(clause, k - 1, n - 1)
-#     else:
-#         return CNF_clause(clause, k, n - 1)
+# matrix = [
+#     [0,1,0,1,0,1,0,0,0],
+#     [1,1,0,1,1,1,0,0,0],
+#     [0,1,1,2,1,1,1,1,1],
+#     [0,1,0,2,0,2,2,0,1],
+#     [0,1,1,2,1,3,0,3,1],
+#     [0,0,0,0,0,3,0,3,0],
+#     [0,0,0,0,0,2,0,2,0],
+#     [1,1,1,0,1,2,2,1,0],
+#     [1,0,1,0,1,0,1,0,0]
+# ]
 
-# def makeCNF():
-#     num_row = len(matrix)
-#     num_col = len(matrix[0])
-#     clauses = []
-#     for i in range(len(matrix)):
-#         for j in range(len(matrix[0])):
-#             if matrix[i][j] > -1:
-#                 # less = combinations([0, 1, 2, 3, 4, 5, 6, 7], adj[i][j] - matrix[i][j] + 1)
-#                 # most = combinations([0, 1, 2, 3, 4, 5, 6, 7], matrix[i][j] + 1)
-#                 #clause that has index
-#                 clause = []
-#                 for one in index_position:
-#                     x = i + x_positions[one]
-#                     y = j + y_positions[one]
-#                     if x < 0 or y < 0 or x > num_row - 1 or y > num_col - 1:
-#                         continue
-#                     elif matrix[x][y] > -1:
-#                         adj[i][j] -= 1
-#                         continue
-#                     clause.append([x, y])
-#                 clauses.append(clause)
-#     return clauses
+# input_board = format_board(matrix)
+# cnf_clauses = generate_cnf_from_input(input_board)
+# cnf_clauses  = [item if isinstance(item, list) else [item] for sublist in cnf_clauses for item in sublist]
+# print(cnf_clauses)
+def A_star_cnf(cnf_clauses):
+    list_vars = find_list_var(cnf_clauses)
+    ini_state = mapping_var_ini_state(list_vars)
 
-# Input_State(matrix)                     
-# vectors = makeCNF()
-# print(adj)
-# flag = CNF_clause(vectors[0], matrix[0][0], adj[0][0])
-# print(flag)
-# # print(Input_State(matrix))
-
-# def CNF():
-#     pass
+# result = []
+# for i in ini_state:
+#     result.append([i, not(ini_state[i])])
+# print(result)
+    problem = Problem(ini_state, cnf_clauses)
+    search = A_star()
+    result = search.solve_problem(problem)
+    ls_cnf = []
+    for i in result:
+        if result[i] == True or result[i] == 1:
+            ls_cnf.append(i)
+        else:
+            ls_cnf.append(-i)
+    return ls_cnf
+# print(list_bomb)
+# print(result)

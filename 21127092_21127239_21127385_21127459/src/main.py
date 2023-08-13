@@ -2,6 +2,7 @@ from fileProcessor import FileProcessor
 from makeCNF import *
 from Pysat.PySAT import pysat_cnf
 from BruteForce.bruteForce import brute_force_cnf, brute_force_cnf_combination
+from A_star.A_star_cnf import A_star_cnf
 from planBomb import *
 import sys, os, time
 
@@ -54,6 +55,18 @@ if __name__ == "__main__":
             print("Result: ", end='')
             print(result)
             print("Elapsed time: {time:.15f}s".format(time = end-start))
+            
+        case 2:
+            print("Solving CNF with A*...")
+            start = time.time()
+
+            result = A_star_cnf(cnf_clauses)
+
+            end = time.time()
+            print("Result: ", end='')
+            print(result)
+            print("Elapsed time: {time:.15f}s".format(time = end-start))
+            
         case 3:
             print("Solving CNF with Brute Force...")
             start = time.time()
