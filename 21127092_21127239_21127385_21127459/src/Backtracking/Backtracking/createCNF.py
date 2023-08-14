@@ -3,8 +3,6 @@ from itertools import combinations, permutations
 # Input and output boards (replace with your actual input and output)
 
 
-
-
 def format_board(board):
     # Convert the board to a list of lists of integers
     formatted_board = []
