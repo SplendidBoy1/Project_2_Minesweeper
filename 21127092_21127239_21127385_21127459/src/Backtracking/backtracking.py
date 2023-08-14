@@ -157,3 +157,21 @@ example_cnf = [
 # print("Backtracked CNF and Domains:")
 # #print(backtracked_result)
 # print(backtracked_domains)
+
+def backtracking_cnf(cnf_clauses):
+    variable_domains = create_variable_domains(cnf_clauses)
+    simplified_result, updated_domains = simplify_cnf_and_update_domains(cnf_clauses, variable_domains)
+    updated_domains= dict(sorted(updated_domains.items(), key=lambda item: item[1]))
+
+    # print("Original CNF:")
+    # print(cnf_clauses)
+
+# print("Simplified CNF after removing unaries:")
+# print(simplified_result)
+
+    # print("Updated Variable Domains:")
+    print(updated_domains)
+
+    backtracked_domains = backtrack_simplify_domains(simplified_result, updated_domains)
+    result = convert_and_sort_result(backtracked_domains)
+    return result
