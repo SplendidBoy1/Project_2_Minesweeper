@@ -1,4 +1,4 @@
-from pysat.solvers import Glucose3
+# from pysat.solvers import Glucose3
 from itertools import combinations, permutations
 # Input and output boards (replace with your actual input and output)
 
