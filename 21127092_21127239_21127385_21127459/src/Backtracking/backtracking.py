@@ -78,7 +78,9 @@ def simplify_cnf_and_update_domains(cnf, variable_domains):
 
 
 def backtrack_simplify_domains(cnf, variable_domains):
-    
+    # print(cnf)
+    # print(check_empty_cnf(cnf))
+    # print((variable_domains[var]) for var in cnf)
     if(check_empty_cnf(cnf)) and ((variable_domains[var]) for var in cnf):
         return variable_domains # trường hợp domain ban đầu đã là kết quả
     
@@ -99,6 +101,7 @@ def backtrack_simplify_domains(cnf, variable_domains):
                 
                 
                 if(check_empty_cnf(updated_cnf)) and ((variable_domains[var]) for var in cnf):
+                    
                     return updated_domains 
                 #elif (len(updated_cnf)0) 
                 # Kiểm tra xem miền gán mới có vi phạm CNF hay không
@@ -125,9 +128,11 @@ def backtrack_simplify_domains(cnf, variable_domains):
 
 def backtracking_cnf(cnf_clauses):
     variable_domains = create_variable_domains(cnf_clauses)
-    #simplified_result, updated_domains = simplify_cnf_and_update_domains(cnf_clauses, variable_domains)
-    variable_domains= dict(sorted(variable_domains.items(), key=lambda item: item[1]))
-    
-    backtracked_domains = backtrack_simplify_domains(cnf_clauses, variable_domains)
+    simplified_result, updated_domains = simplify_cnf_and_update_domains(cnf_clauses, variable_domains)
+    #variable_domains= dict(sorted(variable_domains.items(), key=lambda item: item[1]))
+    updated_domains= dict(sorted(updated_domains.items(), key=lambda item: item[1]))
+    # print(simplified_result)
+    # print(updated_domains)
+    backtracked_domains = backtrack_simplify_domains(simplified_result, updated_domains)
     result = convert_and_sort_result(backtracked_domains)
     return result
