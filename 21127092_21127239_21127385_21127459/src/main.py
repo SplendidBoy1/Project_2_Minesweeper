@@ -80,7 +80,7 @@ if __name__ == "__main__":
             print("Elapsed time: {time:.15f}s".format(time = end-start))
             
         case 4:
-            print("Solving CNF with Brute Force...")
+            print("Solving CNF with Backtracking...")
             start = time.time()
 
             result = backtracking_cnf(cnf_clauses)
