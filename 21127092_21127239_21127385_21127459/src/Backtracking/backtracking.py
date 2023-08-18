@@ -5,7 +5,7 @@ def check_empty_cnf(matrix):
             flag = False
     return flag
 
-def convert_and_sort_result(input_dict):
+def convert_result(input_dict):
     result_list = []
 
     for key, value in input_dict.items():
@@ -17,7 +17,7 @@ def convert_and_sort_result(input_dict):
     sorted_list = sorted(result_list, key=lambda x: abs(x))
     return sorted_list
 
-def create_variable_domains(cnf):
+def create_domain(cnf):
     variable_domains = {}
 
     for clause in cnf:
@@ -28,7 +28,7 @@ def create_variable_domains(cnf):
 
     return variable_domains
 
-def simplify_cnf_remove_value(cnf, value_to_remove):
+def remove_value(cnf, value_to_remove):
     cleaned_cnf = []
     count = 1
     temp = []
@@ -43,7 +43,7 @@ def simplify_cnf_remove_value(cnf, value_to_remove):
 
     return cleaned_cnf
 
-def update_variable_domains(variable_domains, unary):
+def update_domain(variable_domains, unary):
     var = abs(unary)
     opposite_value = -1 if unary > 0 else 1
 
@@ -53,7 +53,7 @@ def update_variable_domains(variable_domains, unary):
     return variable_domains
 
 
-def simplify_cnf_and_update_domains(cnf, variable_domains):
+def pre_process(cnf, variable_domains):
     while True:
         unary_found = False
         unaries = set()
@@ -70,8 +70,8 @@ def simplify_cnf_and_update_domains(cnf, variable_domains):
 
         for unary in unaries:
             #print('unaryyyy phai xoa', unary)
-            variable_domains = update_variable_domains(variable_domains, unary)
-            cnf = simplify_cnf_remove_value(cnf, unary)
+            variable_domains = update_domain(variable_domains, unary)
+            cnf = remove_value(cnf, unary)
             #print('\n huhu cnf ne', cnf)
 
     return cnf, variable_domains
@@ -82,7 +82,7 @@ def backtrack_simplify_domains(cnf, variable_domains):
     # print(check_empty_cnf(cnf))
     # print((variable_domains[var]) for var in cnf)
     if(check_empty_cnf(cnf)) and ((variable_domains[var]) for var in cnf):
-        return variable_domains # trường hợp domain ban đầu đã là kết quả
+        return variable_domains # Trường hợp domain ban đầu đã là kết quả
     
     for var, domain in variable_domains.items():
         if len(domain) > 1:
@@ -93,8 +93,8 @@ def backtrack_simplify_domains(cnf, variable_domains):
                 # Thêm var đó vào cnf để chút update
                 cnf.append([var])
                 
-                # Cập nhật CNF và miền giá trị
-                updated_cnf, updated_domains = simplify_cnf_and_update_domains(cnf, variable_domains)
+                # Cập nhật CNF và domain
+                updated_cnf, updated_domains = pre_process(cnf, variable_domains)
                 # print ('update backtrack', updated_cnf)
                 # print('update domain', updated_domains)
                 # print ('lennn', len(updated_cnf))
@@ -104,17 +104,16 @@ def backtrack_simplify_domains(cnf, variable_domains):
                     
                     return updated_domains 
                 #elif (len(updated_cnf)0) 
-                # Kiểm tra xem miền gán mới có vi phạm CNF hay không
+                # Kiểm tra xem domain có vi phạm CNF 
                 elif len(updated_cnf) > 0:
-                    # Gọi đệ quy để tiếp tục gán và kiểm tra
+                    # Dewwyyy
                     #print('backtrack thoiiii')
                     result_domains = backtrack_simplify_domains(updated_cnf, updated_domains)
                     return result_domains
                     
-                # Khôi phục miền giá trị của biến
+                # backup domain
                 variable_domains[var] = domain.copy()
-    
-    # Trả về None nếu không tìm thấy giải pháp
+    # Không tìm thấy sol thì None
     return None
 
 
@@ -127,12 +126,12 @@ def backtrack_simplify_domains(cnf, variable_domains):
 # ]
 
 def backtracking_cnf(cnf_clauses):
-    variable_domains = create_variable_domains(cnf_clauses)
-    simplified_result, updated_domains = simplify_cnf_and_update_domains(cnf_clauses, variable_domains)
+    variable_domains = create_domain(cnf_clauses)
+    simplified_cnf, updated_domains = pre_process(cnf_clauses, variable_domains)
     #variable_domains= dict(sorted(variable_domains.items(), key=lambda item: item[1]))
     updated_domains= dict(sorted(updated_domains.items(), key=lambda item: item[1]))
-    # print(simplified_result)
+    # print(simplified) # hmmmmm print ko dc nha UN
     # print(updated_domains)
-    backtracked_domains = backtrack_simplify_domains(simplified_result, updated_domains)
-    result = convert_and_sort_result(backtracked_domains)
+    backtracked_domains = backtrack_simplify_domains(simplified_cnf, updated_domains)
+    result = convert_result(backtracked_domains)
     return result
