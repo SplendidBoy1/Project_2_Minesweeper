@@ -73,10 +73,10 @@ class Node_A_star(Node):
         return (self.cost > other.cost)
 
     def __le__(self, other):
-        return (self.cost < other.cost) or (self.cost == other.cost)
+        return (self.cost < other.cost)
 
     def __ge__(self, other):
-        return (self.cost > other.cost) or (self.cost == other.cost)
+        return (self.cost > other.cost)
            
     @staticmethod
     def child_node(problem, node, action):   
@@ -102,7 +102,6 @@ class A_star(Search):
     #frontier is a queue
     #create frontier in initial node
         heapq.heappush(self.frontier, node)
-        # print(node.cur_state)
     # sort frontier
         while(len(self.frontier)):
             temp = heapq.heappop(self.frontier)
